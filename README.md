@@ -21,6 +21,14 @@ CREATE INDEX idx_ordenes_status_total ON ordenes(status, total);
 Por ultimo el tercer indice ayuda con la optimizacion del **WHERE** y el **HAVING**, ya que este nos manda directamente al que cumpla con las condiciones, asi ignorando aquellas que tenga una *condicion* sin procesar
 
 
+**Requerimentos encontrados**
+
+Para el correcto funcionamiento instalaremos algunas dependencias extras
+
+```bash
+npm install pg zod
+```
+
 
 **DESCRIPCION DEL PROYECTO**
 
