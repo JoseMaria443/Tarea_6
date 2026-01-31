@@ -6,7 +6,14 @@ Para que *Next.js* fucniones de manera mucha mos eficiente se realizo la impleme
 ```bash
 CREATE INDEX idx_orden_detalles_composite ON orden_detalles(orden_id, producto_id);
 ```
-Este nos es de gran ayuda ya que la mayoria de los reportes necesitan curzar la tabla de <ins>ordenes</ins> con <ins>productos</ins> por la tabla de <ins>orden_detalles</ins>
+Este nos es de gran ayuda ya que la mayoria de los reportes necesitan curzar la tabla de <ins>ordenes</ins> con <ins>productos</ins> por la tabla de <ins>orden_detalles</ins>, este mismo al ser un indice compuesto, ayuda a acelerar el proceso de busqueda.
+
+```bash
+CREATE INDEX idx_productos_nombre_categoria ON productos(nombre, categoria_id);
+```
+Este segundo indice nos ayuda a agrupar por el nombre de la categoria y a filtrar los productos, para asi encontrar la relacion entre el porducto y la categoria sin tener que revisar toda la tabla
+
+
 
 
 
