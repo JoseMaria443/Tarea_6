@@ -1,6 +1,8 @@
 import { query } from '@/lib/db';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const filterSchema = z.object({
   minMonto: z.coerce.number().min(0).optional().default(500),
   page: z.coerce.number().min(1).optional().default(1),
@@ -31,7 +33,7 @@ export default async function ReporteOrdenes({ searchParams }: { searchParams: {
           </tr>
         </thead>
         <tbody>
-          {res.rows.map((row) => (
+          {res.rows.map((row: any) => (
             <tr key={row.numero_orden} className="border-b">
               <td className="p-2 text-center">{row.numero_orden}</td>
               <td className="p-2">{row.cliente_comprador}</td>

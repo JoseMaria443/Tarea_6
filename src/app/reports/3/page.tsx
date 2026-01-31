@@ -1,6 +1,8 @@
 import { query } from '@/lib/db';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const pageSchema = z.object({
   page: z.coerce.number().min(1).optional().default(1),
 });
@@ -29,7 +31,7 @@ export default async function ReporteVIP({ searchParams }: { searchParams: { pag
           </tr>
         </thead>
         <tbody>
-          {res.rows.map((row, i) => (
+          {res.rows.map((row: any, i: number) => (
             <tr key={i} className="border-b text-center">
               <td className="p-2">{row.cliente}</td>
               <td className="p-2">${row.total_gastado}</td>

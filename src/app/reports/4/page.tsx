@@ -1,5 +1,7 @@
 import { query } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ReporteRanking() {
   const res = await query('SELECT * FROM view_ranking_productos');
   const topProducto = res.rows[0]?.nombre_producto || "N/A";
@@ -20,7 +22,7 @@ export default async function ReporteRanking() {
           </tr>
         </thead>
         <tbody>
-          {res.rows.map((row) => (
+          {res.rows.map((row: any) => (
             <tr key={row.posicion_ranking} className={row.posicion_ranking <= 3 ? "bg-yellow-50" : ""}>
               <td className="p-2 text-center font-bold">#{row.posicion_ranking}</td>
               <td className="p-2">{row.nombre_producto}</td>

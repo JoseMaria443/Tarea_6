@@ -1,5 +1,7 @@
 import { getAsistencias } from "@/api/server";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Asistencias() {
     const asistencias = (await getAsistencias()).reverse()
 

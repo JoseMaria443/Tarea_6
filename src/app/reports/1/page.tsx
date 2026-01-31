@@ -1,6 +1,8 @@
 import { query } from '@/lib/db';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const schema = z.object({
   min: z.coerce.number().min(0).optional().default(0),
 });
@@ -13,7 +15,7 @@ export default async function Reporte1({ searchParams }: { searchParams: { min?:
     [min]
   );
 
-  const totalIngresos = data.rows.reduce((acc, row) => acc + Number(row.ingresos_totales), 0);
+  const totalIngresos = data.rows.reduce((acc: number, row: any) => acc + Number(row.ingresos_totales), 0);
 
   return (
     <div className="p-8">
@@ -33,7 +35,7 @@ export default async function Reporte1({ searchParams }: { searchParams: { min?:
           </tr>
         </thead>
         <tbody>
-          {data.rows.map((row, i) => (
+          {data.rows.map((row: any, i: number) => (
             <tr key={i} className="hover:bg-gray-50">
               <td className="border p-2 font-medium">{row.categoria}</td>
               <td className="border p-2">${row.ingresos_totales}</td>

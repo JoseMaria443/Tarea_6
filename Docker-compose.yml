@@ -19,7 +19,7 @@ services:
       - ./db/view4_masVendidos.sql:/docker-entrypoint-initdb.d/7-view4.sql
       - ./db/view5_mas_complejas.sql:/docker-entrypoint-initdb.d/8-view5.sql
       - ./db/indexes.sql:/docker-entrypoint-initdb.d/9-indexes.sql
-      - ./db/roles.sql:/docker-entrypoint-initdb.d/10-roles.sql
+      - ./db/roles.sql:/docker-entrypoint-initdb.d/99-roles.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -33,7 +33,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://app_user:Nextjs_Secure_Pass_2024@db:5432/postgres
+      DATABASE_URL: postgresql://chema:Chema3001@db:5432/postgres
     depends_on:
       db:
         condition: service_healthy

@@ -1,9 +1,11 @@
 import { query } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ReporteInventario() {
   const res = await query('SELECT * FROM view_inventario_status');
 
-  const alertas = res.rows.filter(r => r.semaforo_stock !== 'OK').length;
+  const alertas = res.rows.filter((r: any) => r.semaforo_stock !== 'OK').length;
 
   return (
     <div className="p-8">
@@ -24,7 +26,7 @@ export default async function ReporteInventario() {
           </tr>
         </thead>
         <tbody>
-          {res.rows.map((row, i) => (
+          {res.rows.map((row: any, i: number) => (
             <tr key={i} className="text-center">
               <td className="border p-2">{row.producto}</td>
               <td className="border p-2">{row.stock}</td>
