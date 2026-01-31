@@ -1,7 +1,9 @@
 **Tarea 6: Lab Reportes: Next.js Reports Dashboard (PostgreSQL + Views  +Docker Compose)**
 
 *INDEXES*
+
 Para que *Next.js* fucniones de manera mucha mos eficiente se realizo la implementacion de 3 diferentese indices, los cuales son los siguientes:
+
 
 ```bash
 CREATE INDEX idx_orden_detalles_composite ON orden_detalles(orden_id, producto_id);
@@ -13,7 +15,10 @@ CREATE INDEX idx_productos_nombre_categoria ON productos(nombre, categoria_id);
 ```
 Este segundo indice nos ayuda a agrupar por el nombre de la categoria y a filtrar los productos, para asi encontrar la relacion entre el porducto y la categoria sin tener que revisar toda la tabla
 
-
+```bash
+CREATE INDEX idx_ordenes_status_total ON ordenes(status, total);
+```
+Por ultimo el tercer indice ayuda con la optimizacion del **WHERE** y el **HAVING**, ya que este nos manda directamente al que cumpla con las condiciones, asi ignorando aquellas que tenga una *condicion* sin procesar
 
 
 
