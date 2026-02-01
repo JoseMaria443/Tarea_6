@@ -1,5 +1,16 @@
 **Tarea 6: Lab Reportes: Next.js Reports Dashboard (PostgreSQL + Views  +Docker Compose)**
 
+**Como iniciar**
+
+Para iniciar la actividad solo se requerira un solo comando, ya que todo esta configurado para que asi suceda.
+
+```bash 
+docker compose up --build
+```
+Dicho comando es para ejecutarlo desde el gitbash, aunque tambien funciona desde powershell de windowds
+
+
+
 **Funcionamiento**
 
 *Base de datos*
