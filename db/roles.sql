@@ -18,9 +18,9 @@ GRANT USAGE ON SCHEMA public TO chema;
 -- 3. Acceso RESTRINGIDO (Solo SELECT sobre las VIEWS)
 -- La app NO puede tocar las tablas directamente (Requisito PDF)
 REVOKE ALL ON ALL TABLES IN SCHEMA public FROM chema;
-GRANT SELECT ON view_ventas_por_categoria TO chema;
-GRANT SELECT ON view_inventario_status TO chema;
-GRANT SELECT ON view_clientes_vip TO chema;
-GRANT SELECT ON view_ranking_productos TO chema;
-GRANT SELECT ON view_ordenes_complejas TO chema;
+GRANT SELECT ON ventas_por_categoria TO chema;
+GRANT SELECT ON inventario_status TO chema;
+GRANT SELECT ON clientes_ricos TO chema;
+GRANT SELECT ON mas_vendidos TO chema;
+GRANT SELECT ON mas_complejas TO chema;
 
