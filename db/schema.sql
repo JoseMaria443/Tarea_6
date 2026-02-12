@@ -8,7 +8,7 @@
 
 -- Limpiar tablas si existen (útil para desarrollo)
 -- CUIDADO: Esto borra todos los datos
-DROP TABLE IF EXISTS tabla_relacion CASCADE;
+     tabla_relacion CASCADE;
 DROP TABLE IF EXISTS tabla_hija CASCADE;
 DROP TABLE IF EXISTS tabla_padre CASCADE;
 
