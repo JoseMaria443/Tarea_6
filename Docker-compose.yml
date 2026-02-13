@@ -1,14 +1,14 @@
 services:
-  db:
+  db_chema:
     image: postgres:15-alpine
-    container_name: nextjs_db
+    container_name: nextjs_db_chema
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ./db/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
       - ./db/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
@@ -33,7 +33,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://${APP_DB_USER:-app_user}:${APP_DB_PASSWORD:-app_password}@db:5432/${POSTGRES_DB:-postgres}
+      DATABASE_URL: postgresql://${APP_DB_USER:-chema}:${APP_DB_PASSWORD:-chema3001}@db_chema:5432/${POSTGRES_DB:-postgres}
     depends_on:
-      db:
+      db_chema:
         condition: service_healthy

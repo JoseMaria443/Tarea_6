@@ -5,20 +5,20 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
 	try {
 		const searchParams = request.nextUrl.searchParams;
-		const term = searchParams.get("term")?.trim() || undefined;
+		const category = searchParams.get("category")?.trim() || undefined;
 
-		const validTerm = term && term.length > 0 ? term : undefined;
+		const validCategory = category && category.length > 0 ? category : undefined;
 
 		const filters: string[] = [];
 		const values: Array<string | number> = [];
 
-		if (validTerm) {
-			values.push(validTerm);
-			filters.push(`term = $${values.length}`);
+		if (validCategory) {
+			values.push(`%${validCategory}%`);
+			filters.push(`categoria_nombre ILIKE $${values.length}`);
 		}
 
 		const where = buildWhereClause(filters, values);
-		const sql = `SELECT * FROM vw_attendance_by_group ${where} ORDER BY porcentaje_asistencia ASC`;
+		const sql = `SELECT * FROM vw_sales_by_category ${where} ORDER BY ingresos_totales DESC`;
 
 		const res = await query(sql, values);
 		const data = res.rows;
