@@ -13,8 +13,8 @@ function TeacherLoadContent() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const term = searchParams.get("term")?.trim() || "";
-	const validTerm = term && term.length > 0 ? term : undefined;
+	const status = searchParams.get("status")?.trim() || "";
+	const validStatus = status && status.length > 0 ? status : undefined;
 	const rawPage = searchParams.get("page");
 	const rawPageSize = searchParams.get("pageSize");
 
@@ -28,7 +28,7 @@ function TeacherLoadContent() {
 			const params = new URLSearchParams({
 				page: String(page),
 				pageSize: String(pageSize),
-				...(validTerm && { term: validTerm }),
+				...(validStatus && { status: validStatus }),
 			});
 			const response = await fetch(`/api/reports/vw_teacher_load?${params}`);
 			if (!response.ok) throw new Error("Error al obtener datos");
@@ -41,7 +41,7 @@ function TeacherLoadContent() {
 		} finally {
 			setLoading(false);
 		}
-	}, [page, pageSize, validTerm]);
+	}, [page, pageSize, validStatus]);
 
 	useEffect(() => {
 		// Siempre llamar fetchData (con o sin filtro)
@@ -49,14 +49,14 @@ function TeacherLoadContent() {
 	}, [fetchData]);
 
 	const makeLink = (targetPage: number) =>
-		createPaginationLink({ term: validTerm || "" }, targetPage, pageSize);
+		createPaginationLink({ status: validStatus || "" }, targetPage, pageSize);
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const formData = new FormData(e.currentTarget);
 		const params = new URLSearchParams();
-		const termValue = formData.get("term");
-		if (termValue) params.set("term", termValue.toString());
+		const statusValue = formData.get("status");
+		if (statusValue) params.set("status", statusValue.toString());
 		params.set("page", "1");
 		params.set("pageSize", String(pageSize));
 		window.history.pushState({}, "", `?${params.toString()}`);
@@ -68,9 +68,9 @@ function TeacherLoadContent() {
 		<main className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950">
 			<div className="bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 text-white shadow-2xl border-b-4 border-red-600">
 				<div className="max-w-7xl mx-auto px-6 py-8">
-					<h1 className="text-3xl font-bold mb-2">Carga Docente por Periodo</h1>
+					<h1 className="text-3xl font-bold mb-2">Complejidad de Ordenes</h1>
 					<p className="text-gray-300 text-base">
-						Grupos, alumnos y promedio general por docente y periodo.
+						Ordenes con multiples productos y su complejidad.
 					</p>
 				</div>
 			</div>
@@ -78,9 +78,9 @@ function TeacherLoadContent() {
 				<div className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl border border-gray-800/30 p-6">
 					<form className="flex flex-wrap gap-3 mb-6" onSubmit={handleSubmit}>
 						<input
-							name="term"
-							placeholder="Periodo (ej. 2024-A)"
-							defaultValue={validTerm || ""}
+							name="status"
+							placeholder="Estado (opcional)"
+							defaultValue={validStatus || ""}
 							className="border border-gray-300 rounded px-3 py-2 text-sm"
 						/>
 						<button
@@ -105,7 +105,7 @@ function TeacherLoadContent() {
 ) : data.length === 0 ? (
 						<div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
 							<p className="text-yellow-700 font-bold text-sm">
-								No hay datos para el período "{validTerm}". Intenta con 2024-A o 2024-B
+								No hay datos para los filtros indicados.
 							</p>
 						</div>
 					) : (
@@ -115,38 +115,53 @@ function TeacherLoadContent() {
 									<thead className="bg-gray-50">
 										<tr>
 											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Docente
+												Orden
 											</th>
 											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Periodo
+												Estado
+											</th>
+											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+												Cliente
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												Grupos
+												Productos
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												Alumnos
+												Items
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												Promedio
+												Monto
+											</th>
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+												Precio Prom.
+											</th>
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+												Complejidad
 											</th>
 										</tr>
 									</thead>
 									<tbody className="divide-y divide-gray-200">
 										{data.map((row: any) => (
-											<tr key={`${row.maestro_id}-${row.term}`}>
+											<tr key={row.orden_id}>
 												<td className="px-6 py-4 whitespace-nowrap">
-													<div className="font-medium text-gray-900">{row.maestro_nombre}</div>
-													<div className="text-xs text-gray-500">{row.maestro_correo}</div>
+													{row.orden_id}
 												</td>
-												<td className="px-6 py-4 whitespace-nowrap">{row.term}</td>
+												<td className="px-6 py-4 whitespace-nowrap">{row.estado_orden}</td>
+												<td className="px-6 py-4 whitespace-nowrap">{row.cliente_nombre}</td>
 												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.total_grupos}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.total_estudiantes}
+													{row.productos_distintos}
 												</td>
 												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.promedio_calificaciones}
+													{row.total_items}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+													${row.monto_total}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+													${row.precio_promedio_item}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+													{row.nivel_complejidad}
 												</td>
 											</tr>
 										))}

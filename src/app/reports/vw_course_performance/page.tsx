@@ -27,7 +27,6 @@ function CoursePerformanceContent() {
 	const pageSize = Math.min(toNumber(rawPageSize || "", 10), 50);
 
 	const fetchData = useCallback(async () => {
-		if (!validCategory && !validRisk) return;
 		try {
 			setLoading(true);
 			setError(null);
@@ -112,30 +111,40 @@ function CoursePerformanceContent() {
 					</form>
 
 					{error && (
-						<div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
-							<p className="text-yellow-700 font-bold text-sm">
-								No hay datos para los filtros indicados.
-							</p>
+						<div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+							<p className="text-red-700 font-bold text-sm">{error}</p>
 						</div>
-				{loading ? (
+					)}
+
+					{loading ? (
 						<div className="text-center py-8">
 							<p className="text-gray-600">Cargando datos...</p>
 						</div>
 					) : data.length === 0 ? (
 						<div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
 							<p className="text-yellow-700 font-bold text-sm">
-												Categoria
+								No hay datos para los filtros indicados.
 							</p>
 						</div>
-												Riesgo
+					) : (
 						<>
 							<div className="bg-white shadow rounded-lg overflow-hidden">
-												Productos
+								<table className="min-w-full divide-y divide-gray-200">
 									<thead className="bg-gray-50">
 										<tr>
-												Stock
-												Curso
+											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+												Categoria
 											</th>
+											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+												Riesgo
+											</th>
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+												Productos
+											</th>
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+												Stock
+											</th>
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
 												Valor Inventario
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
@@ -145,50 +154,40 @@ function CoursePerformanceContent() {
 												Agotados
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												% Bajo Stock
-												Periodo
-											</th>
-											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												Promedio
-											<tr key={row.categoria_id}>
-											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-													<div className="font-medium text-gray-900">{row.categoria_nombre}</div>
-											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												<td className="px-6 py-4 whitespace-nowrap">{row.nivel_riesgo}</td>
-											</th>
-													{row.total_productos}
-									</thead>
-									<tbody className="divide-y divide-gray-200">
-													{row.total_stock}
-											<tr key={`${row.curso_id}-${row.term}`}>
-												<td className="px-6 py-4 whitespace-nowrap">
-													${row.valor_inventario}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.productos_bajo_stock}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.productos_agotados}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.pct_bajo_stock}%
-													<div className="text-xs text-gray-500">{row.curso_codigo}</div>
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap">{row.term}</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.promedio_calificaciones}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.total_reprobados}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.tasa_reprobacion}%
-												</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
-							</div>
+											% Bajo Stock
+										</th>
+									</tr>
+								</thead>
+								<tbody className="divide-y divide-gray-200">
+									{data.map((row: any) => (
+										<tr key={row.categoria_id}>
+											<td className="px-6 py-4 whitespace-nowrap">
+												<div className="font-medium text-gray-900">{row.categoria_nombre}</div>
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap">{row.nivel_riesgo}</td>
+											<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+												{row.total_productos}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+												{row.total_stock}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+												${row.valor_inventario}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+												{row.productos_bajo_stock}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+												{row.productos_agotados}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+												{row.pct_bajo_stock}%
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
 
 							<div className="flex items-center justify-between mt-6 text-sm">
 								<span className="text-gray-600">

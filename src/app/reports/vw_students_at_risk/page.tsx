@@ -13,12 +13,10 @@ function StudentsAtRiskContent() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const term = searchParams.get("term")?.trim() || "";
 	const q = searchParams.get("q")?.trim() || "";
 	const rawPage = searchParams.get("page");
 	const rawPageSize = searchParams.get("pageSize");
 
-	const validTerm = term && term.length > 0 ? term : undefined;
 	const validQuery = q && q.length > 0 ? q : undefined;
 
 	const page = toNumber(rawPage || "", 1);
@@ -31,7 +29,6 @@ function StudentsAtRiskContent() {
 			const params = new URLSearchParams({
 				page: String(page),
 				pageSize: String(pageSize),
-				...(validTerm && { term: validTerm }),
 				...(validQuery && { q: validQuery }),
 			});
 			const response = await fetch(`/api/reports/vw_students_at_risk?${params}`);
@@ -45,7 +42,7 @@ function StudentsAtRiskContent() {
 		} finally {
 			setLoading(false);
 		}
-	}, [page, pageSize, validTerm, validQuery]);
+	}, [page, pageSize, validQuery]);
 
 	useEffect(() => {
 		// Siempre llamar fetchData (con o sin filtro)
@@ -53,15 +50,13 @@ function StudentsAtRiskContent() {
 	}, [fetchData]);
 
 	const makeLink = (targetPage: number) =>
-		createPaginationLink({ term: validTerm || "", q: validQuery || "" }, targetPage, pageSize);
+		createPaginationLink({ q: validQuery || "" }, targetPage, pageSize);
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const formData = new FormData(e.currentTarget);
 		const params = new URLSearchParams();
-		const termValue = formData.get("term");
 		const qValue = formData.get("q");
-		if (termValue) params.set("term", termValue.toString());
 		if (qValue) params.set("q", qValue.toString());
 		params.set("page", "1");
 		params.set("pageSize", String(pageSize));
@@ -72,9 +67,9 @@ function StudentsAtRiskContent() {
 		<main className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950">
 			<div className="bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 text-white shadow-2xl border-b-4 border-red-600">
 				<div className="max-w-7xl mx-auto px-6 py-8">
-					<h1 className="text-3xl font-bold mb-2">Estudiantes en Riesgo</h1>
+					<h1 className="text-3xl font-bold mb-2">Ranking de Productos</h1>
 					<p className="text-gray-300 text-base">
-						Promedio bajo o inasistencia alta, con busqueda por nombre o correo.
+						Ranking por ingresos, con busqueda por nombre de producto.
 					</p>
 				</div>
 			</div>
@@ -82,14 +77,8 @@ function StudentsAtRiskContent() {
 				<div className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl border border-gray-800/30 p-6">
 					<form className="flex flex-wrap gap-3 mb-6" onSubmit={handleSubmit}>
 						<input
-							name="term"
-							placeholder="Periodo (ej. 2024-A)"
-							defaultValue={validTerm || ""}
-							className="border border-gray-300 rounded px-3 py-2 text-sm"
-						/>
-						<input
 							name="q"
-							placeholder="Buscar por nombre o correo"
+							placeholder="Buscar por producto"
 							defaultValue={validQuery || ""}
 							className="border border-gray-300 rounded px-3 py-2 text-sm w-64"
 						/>
@@ -115,7 +104,7 @@ function StudentsAtRiskContent() {
 		) : data.length === 0 ? (
 						<div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
 							<p className="text-yellow-700 font-bold text-sm">
-								No hay estudiantes en riesgo {validTerm && `para el período "${validTerm}"`} {validQuery && `que coincidan con "${validQuery}"`}. Intenta con 2024-A o 2024-B
+								No hay productos que coincidan con la busqueda.
 							</p>
 						</div>
 					) : (
@@ -125,42 +114,39 @@ function StudentsAtRiskContent() {
 									<thead className="bg-gray-50">
 										<tr>
 											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Estudiante
-											</th>
-											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Programa
-											</th>
-											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Periodo
+												Producto
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												Promedio
+												Unidades
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												% Inasistencia
+												Ingresos
 											</th>
-											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Motivo
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+												Precio Prom.
+											</th>
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+												Ranking
 											</th>
 										</tr>
 									</thead>
 									<tbody className="divide-y divide-gray-200">
 										{data.map((row: any) => (
-											<tr key={`${row.estudiante_id}-${row.term}`}>
+											<tr key={row.producto_id}>
 												<td className="px-6 py-4 whitespace-nowrap">
-													<div className="font-medium text-gray-900">{row.estudiante_nombre}</div>
-													<div className="text-xs text-gray-500">{row.estudiante_correo}</div>
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap">{row.programa}</td>
-												<td className="px-6 py-4 whitespace-nowrap">{row.term}</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.promedio_acumulado}
+													<div className="font-medium text-gray-900">{row.producto_nombre}</div>
 												</td>
 												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.porcentaje_inasistencia}%
+													{row.total_unidades}
 												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-													{row.riesgo_motivo}
+												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+													${row.ingresos_totales}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+													${row.precio_promedio}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+													#{row.ranking}
 												</td>
 											</tr>
 										))}

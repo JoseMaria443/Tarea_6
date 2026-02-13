@@ -2,49 +2,44 @@ import { query } from "@/lib/db";
 import { buildWhereClause } from "@/lib/reports";
 import { NextRequest, NextResponse } from "next/server";
 
-const ProgramWhitelist = [
-	"Ingeniería de Software",
-	"Ciencias de Datos",
-	"Diseño Digital",
-	"Historia del Arte",
-] as const;
+const LevelWhitelist = ["vip", "alto", "medio"] as const;
 
 export async function GET(request: NextRequest) {
 	try {
 		const searchParams = request.nextUrl.searchParams;
-		const term = searchParams.get("term")?.trim() || undefined;
-		const program = searchParams.get("program")?.trim() || undefined;
+		const name = searchParams.get("name")?.trim() || undefined;
+		const level = searchParams.get("level")?.trim() || undefined;
 		const page = parseInt(searchParams.get("page") || "1");
 		const pageSize = Math.min(parseInt(searchParams.get("pageSize") || "10"), 50);
 
-		const validTerm = term && term.length > 0 ? term : undefined;
-		const validProgram = program && ProgramWhitelist.includes(program as any) ? program : undefined;
+		const validName = name && name.length > 0 ? name : undefined;
+		const validLevel = level && LevelWhitelist.includes(level as any) ? level : undefined;
 
 		const filters: string[] = [];
 		const values: Array<string | number> = [];
 
-		if (validTerm) {
-			values.push(validTerm);
-			filters.push(`term = $${values.length}`);
+		if (validName) {
+			values.push(`%${validName}%`);
+			filters.push(`(cliente_nombre ILIKE $${values.length} OR cliente_email ILIKE $${values.length})`);
 		}
 
-		if (validProgram) {
-			values.push(validProgram);
-			filters.push(`programa = $${values.length}`);
+		if (validLevel) {
+			values.push(validLevel);
+			filters.push(`nivel_cliente = $${values.length}`);
 		}
 
 		const where = buildWhereClause(filters, values);
 		const offset = (page - 1) * pageSize;
 
 		const countRes = await query(
-			`SELECT COUNT(*)::int AS total FROM vw_rank_students ${where}`,
+			`SELECT COUNT(*)::int AS total FROM vw_customer_value ${where}`,
 			values
 		);
 		const total = countRes.rows[0]?.total ?? 0;
 		const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
 		const dataRes = await query(
-			`SELECT * FROM vw_rank_students ${where} ORDER BY term DESC, programa ASC, posicion_en_ranking ASC LIMIT $${values.length + 1} OFFSET $${values.length + 2}`,
+			`SELECT * FROM vw_customer_value ${where} ORDER BY total_gastado DESC, cliente_nombre ASC LIMIT $${values.length + 1} OFFSET $${values.length + 2}`,
 			[...values, pageSize, offset]
 		);
 		const data = dataRes.rows;

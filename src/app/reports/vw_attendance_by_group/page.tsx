@@ -12,12 +12,12 @@ function AttendanceContent() {
   const category = searchParams.get("category")?.trim() || "";
   const validCategory = category && category.length > 0 ? category : undefined;
 
-	const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async () => {
 		try {
 			setLoading(true);
 			setError(null);
 			const params = new URLSearchParams({
-				...(validTerm && { term: validTerm }),
+        ...(validCategory && { category: validCategory }),
 			});
 			const response = await fetch(`/api/reports/vw_attendance_by_group?${params}`);
 			if (!response.ok) throw new Error("Error al obtener datos");

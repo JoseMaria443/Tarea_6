@@ -5,12 +5,7 @@ import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { toNumber, createPaginationLink } from "@/lib/reports";
 
-const ProgramWhitelist = [
-	"Ingeniería de Software",
-	"Ciencias de Datos",
-	"Diseño Digital",
-	"Historia del Arte",
-] as const;
+const LevelWhitelist = ["vip", "alto", "medio"] as const;
 
 function RankStudentsContent() {
 	const searchParams = useSearchParams();
@@ -20,13 +15,13 @@ function RankStudentsContent() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const term = searchParams.get("term")?.trim() || "";
-	const program = searchParams.get("program")?.trim() || "";
+	const name = searchParams.get("name")?.trim() || "";
+	const level = searchParams.get("level")?.trim() || "";
 	const rawPage = searchParams.get("page");
 	const rawPageSize = searchParams.get("pageSize");
 
-	const validTerm = term && term.length > 0 ? term : undefined;
-	const validProgram = program && ProgramWhitelist.includes(program as any) ? program : undefined;
+	const validName = name && name.length > 0 ? name : undefined;
+	const validLevel = level && LevelWhitelist.includes(level as any) ? level : undefined;
 
 	const page = toNumber(rawPage || "", 1);
 	const pageSize = Math.min(toNumber(rawPageSize || "", 10), 50);
@@ -38,8 +33,8 @@ function RankStudentsContent() {
 			const params = new URLSearchParams({
 				page: String(page),
 				pageSize: String(pageSize),
-				...(validTerm && { term: validTerm }),
-				...(validProgram && { program: validProgram }),
+				...(validName && { name: validName }),
+				...(validLevel && { level: validLevel }),
 			});
 			const response = await fetch(`/api/reports/vw_rank_students?${params}`);
 			if (!response.ok) throw new Error("Error al obtener datos");
@@ -52,7 +47,7 @@ function RankStudentsContent() {
 		} finally {
 			setLoading(false);
 		}
-	}, [page, pageSize, validTerm, validProgram]);
+	}, [page, pageSize, validName, validLevel]);
 
 	useEffect(() => {
 		// Siempre llamar fetchData (con o sin filtro)
@@ -60,16 +55,16 @@ function RankStudentsContent() {
 	}, [fetchData]);
 
 	const makeLink = (targetPage: number) =>
-		createPaginationLink({ term: validTerm || "", program: validProgram || "" }, targetPage, pageSize);
+		createPaginationLink({ name: validName || "", level: validLevel || "" }, targetPage, pageSize);
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const formData = new FormData(e.currentTarget);
 		const params = new URLSearchParams();
-		const termValue = formData.get("term");
-		const programValue = formData.get("program");
-		if (termValue) params.set("term", termValue.toString());
-		if (programValue) params.set("program", programValue.toString());
+		const nameValue = formData.get("name");
+		const levelValue = formData.get("level");
+		if (nameValue) params.set("name", nameValue.toString());
+		if (levelValue) params.set("level", levelValue.toString());
 		params.set("page", "1");
 		params.set("pageSize", String(pageSize));
 		window.location.href = `?${params.toString()}`;
@@ -79,9 +74,9 @@ function RankStudentsContent() {
 		<main className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950">
 			<div className="bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 text-white shadow-2xl border-b-4 border-red-600">
 				<div className="max-w-7xl mx-auto px-6 py-8">
-					<h1 className="text-3xl font-bold mb-2">Ranking de Estudiantes</h1>
+					<h1 className="text-3xl font-bold mb-2">Valor de Clientes</h1>
 					<p className="text-gray-300 text-base">
-						Ranking por programa y periodo, basado en promedio general.
+						Clientes con mayor valor en ordenes pagadas.
 					</p>
 				</div>
 			</div>
@@ -89,18 +84,18 @@ function RankStudentsContent() {
 				<div className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl border border-gray-800/30 p-6">
 					<form className="flex flex-wrap gap-3 mb-6" onSubmit={handleSubmit}>
 						<input
-							name="term"
-							placeholder="Periodo (ej. 2024-A)"
-							defaultValue={validTerm || ""}
+							name="name"
+							placeholder="Cliente (opcional)"
+							defaultValue={validName || ""}
 							className="border border-gray-300 rounded px-3 py-2 text-sm"
 						/>
 						<select
-							name="program"
-							defaultValue={validProgram || ""}
+							name="level"
+							defaultValue={validLevel || ""}
 							className="border border-gray-300 rounded px-3 py-2 text-sm"
 						>
-							<option value="">Programa (opcional)</option>
-							{ProgramWhitelist.map((item) => (
+							<option value="">Nivel (opcional)</option>
+							{LevelWhitelist.map((item) => (
 								<option key={item} value={item}>
 									{item}
 								</option>
@@ -128,7 +123,7 @@ function RankStudentsContent() {
 				) : data.length === 0 ? (
 						<div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
 							<p className="text-yellow-700 font-bold text-sm">
-								No hay datos {validTerm && `para el período "${validTerm}"`} {validProgram && `en el programa "${validProgram}"`}. Intenta con 2024-A o 2024-B
+								No hay datos para los filtros indicados.
 							</p>
 						</div>
 					) : (
@@ -138,36 +133,47 @@ function RankStudentsContent() {
 									<thead className="bg-gray-50">
 										<tr>
 											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Estudiante
+												Cliente
 											</th>
 											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Programa
+												Email
 											</th>
 											<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-												Periodo
+												Nivel
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												Promedio
+												Ordenes
 											</th>
 											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-												Ranking
+												Total Gastado
+											</th>
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+												Ticket Prom.
+											</th>
+											<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+												% Ingresos
 											</th>
 										</tr>
 									</thead>
 									<tbody className="divide-y divide-gray-200">
 										{data.map((row: any) => (
-											<tr key={`${row.estudiante_id}-${row.term}-${row.programa}`}>
+											<tr key={row.usuario_id}>
 												<td className="px-6 py-4 whitespace-nowrap">
-													<div className="font-medium text-gray-900">{row.estudiante_nombre}</div>
-													<div className="text-xs text-gray-500">{row.estudiante_correo}</div>
+													<div className="font-medium text-gray-900">{row.cliente_nombre}</div>
 												</td>
-												<td className="px-6 py-4 whitespace-nowrap">{row.programa}</td>
-												<td className="px-6 py-4 whitespace-nowrap">{row.term}</td>
+												<td className="px-6 py-4 whitespace-nowrap">{row.cliente_email}</td>
+												<td className="px-6 py-4 whitespace-nowrap">{row.nivel_cliente}</td>
 												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													{row.promedio_calificaciones}
+													{row.total_ordenes}
 												</td>
 												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
-													#{row.posicion_en_ranking}
+													${row.total_gastado}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+													${row.ticket_promedio}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-right font-mono">
+													{row.porcentaje_ingresos}%
 												</td>
 											</tr>
 										))}
