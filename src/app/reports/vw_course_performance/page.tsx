@@ -6,6 +6,13 @@ import { useSearchParams } from "next/navigation";
 import { toNumber, createPaginationLink } from "@/lib/reports";
 
 const RiskWhitelist = ["critico", "alerta", "estable"] as const;
+const CategoryWhitelist = [
+	"Electrónica",
+	"Ropa",
+	"Hogar",
+	"Deportes",
+	"Libros",
+] as const;
 
 function CoursePerformanceContent() {
 	const searchParams = useSearchParams();
@@ -83,12 +90,18 @@ function CoursePerformanceContent() {
 			<div className="w-full px-6 py-10">
 				<div className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl border border-gray-800/30 p-6">
 					<form className="flex flex-wrap gap-3 mb-6" onSubmit={handleSubmit}>
-						<input
+						<select
 							name="category"
-							placeholder="Categoria (opcional)"
 							defaultValue={validCategory || ""}
 							className="border border-gray-300 rounded px-3 py-2 text-sm"
-						/>
+						>
+							<option value="">Categoria (todas)</option>
+							{CategoryWhitelist.map((item) => (
+								<option key={item} value={item}>
+									{item}
+								</option>
+							))}
+						</select>
 						<select
 							name="risk"
 							defaultValue={validRisk || ""}

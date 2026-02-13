@@ -5,6 +5,25 @@ import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { toNumber, createPaginationLink } from "@/lib/reports";
 
+const ProductWhitelist = [
+	"Laptop Pro 15\"",
+	"Mouse Inalámbrico",
+	"Teclado Mecánico",
+	"Monitor 27\"",
+	"Webcam HD",
+	"Camiseta Básica",
+	"Jeans Clásico",
+	"Sudadera Tech",
+	"Zapatos Casual",
+	"Gorra Deportiva",
+	"Lámpara LED",
+	"Silla Ergonómica",
+	"Organizador",
+	"Planta Artificial",
+	"Cuadro Decorativo",
+	"Producto Gratuito",
+] as const;
+
 function StudentsAtRiskContent() {
 	const searchParams = useSearchParams();
 	const [data, setData] = useState<any[]>([]);
@@ -76,12 +95,18 @@ function StudentsAtRiskContent() {
 			<div className="w-full px-6 py-10">
 				<div className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl border border-gray-800/30 p-6">
 					<form className="flex flex-wrap gap-3 mb-6" onSubmit={handleSubmit}>
-						<input
+						<select
 							name="q"
-							placeholder="Buscar por producto"
 							defaultValue={validQuery || ""}
-							className="border border-gray-300 rounded px-3 py-2 text-sm w-64"
-						/>
+							className="border border-gray-300 rounded px-3 py-2 text-sm"
+						>
+							<option value="">Producto (todos)</option>
+							{ProductWhitelist.map((item) => (
+								<option key={item} value={item}>
+									{item}
+								</option>
+							))}
+						</select>
 						<button
 							type="submit"
 							className="bg-gray-900 text-white px-4 py-2 rounded text-sm"

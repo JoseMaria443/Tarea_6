@@ -6,6 +6,14 @@ import { useSearchParams } from "next/navigation";
 import { toNumber, createPaginationLink } from "@/lib/reports";
 
 const LevelWhitelist = ["vip", "alto", "medio"] as const;
+const CustomerWhitelist = [
+	"Ada Lovelace",
+	"Alan Turing",
+	"Grace Hopper",
+	"Linus Torvalds",
+	"Margaret Hamilton",
+	"Donald Knuth",
+] as const;
 
 function RankStudentsContent() {
 	const searchParams = useSearchParams();
@@ -83,12 +91,18 @@ function RankStudentsContent() {
 			<div className="w-full px-6 py-10">
 				<div className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl border border-gray-800/30 p-6">
 					<form className="flex flex-wrap gap-3 mb-6" onSubmit={handleSubmit}>
-						<input
+						<select
 							name="name"
-							placeholder="Cliente (opcional)"
 							defaultValue={validName || ""}
 							className="border border-gray-300 rounded px-3 py-2 text-sm"
-						/>
+						>
+							<option value="">Cliente (todos)</option>
+							{CustomerWhitelist.map((item) => (
+								<option key={item} value={item}>
+									{item}
+								</option>
+							))}
+						</select>
 						<select
 							name="level"
 							defaultValue={validLevel || ""}
