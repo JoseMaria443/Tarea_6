@@ -6,11 +6,8 @@
 -- Dominio: [Describir el dominio modelado]
 -- ============================================
 
--- Limpiar tablas si existen (útil para desarrollo)
+-- Limpiar tablas si existen (util para desarrollo)
 -- CUIDADO: Esto borra todos los datos
-     tabla_relacion CASCADE;
-DROP TABLE IF EXISTS tabla_hija CASCADE;
-DROP TABLE IF EXISTS tabla_padre CASCADE;
 
 -- ============================================
 -- TABLAS CATÁLOGO (sin dependencias)
@@ -86,20 +83,7 @@ CREATE TABLE orden_detalles (
 
 
 -- ============================================
--- ÍNDICES (para optimizar consultas)
--- ============================================
-
--- Índice para búsquedas por usuario en órdenes
-CREATE INDEX idx_ordenes_usuario_id ON ordenes(usuario_id);
-
--- Índice para búsquedas por categoría en productos
-CREATE INDEX idx_productos_categoria_id ON productos(categoria_id);
-
--- Índice para búsquedas por status de orden
-CREATE INDEX idx_ordenes_status ON ordenes(status);
-
--- ============================================
--- COMENTARIOS DE TABLAS (documentación en BD)
+-- COMENTARIOS DE TABLAS (documentacion en BD)
 -- ============================================
 
 COMMENT ON TABLE categorias IS 'Catálogo de categorías de productos';

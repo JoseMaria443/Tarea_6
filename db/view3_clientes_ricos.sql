@@ -1,24 +1,51 @@
 -- =================================================================
--- Qué devuelve: Clientes que registraron mas comprar
--- Grain: Una fila por usuario.
--- Métricas: Gasto acumulado y ratio vs total global.
--- Por qué usa CTE: Para aislar el cálculo de sumatorias antes del filtro final.
+-- Que devuelve: Clientes con mayor valor en pedidos pagados.
+-- Grain: Una fila por cliente.
+-- Metricas: total_ordenes, total_gastado, ticket_promedio,
+--           porcentaje_ingresos, nivel_cliente.
+-- Por que usa GROUP BY/HAVING: Agrupa por cliente y filtra por encima del
+--           promedio de gasto usando HAVING.
+-- Por que usa CTE: Aisla calculos de gasto y totales globales.
+-- Verify:
+--   SELECT * FROM vw_rank_students ORDER BY total_gastado DESC;
+--   SELECT COUNT(*) FROM vw_rank_students;
 -- =================================================================
-CREATE OR REPLACE VIEW clientes_ricos AS
-WITH GastoCalculado AS (
-    SELECT usuario_id, SUM(total) as suma_cliente
-    FROM ordenes
-    WHERE status = 'pagado'
-    GROUP BY usuario_id
+CREATE OR REPLACE VIEW vw_rank_students AS
+WITH customer_spend AS (
+    SELECT
+        o.usuario_id,
+        COUNT(DISTINCT o.id) AS total_ordenes,
+        SUM(o.total) AS total_gastado,
+        ROUND(AVG(o.total), 2) AS ticket_promedio
+    FROM ordenes o
+    WHERE o.status = 'pagado'
+    GROUP BY o.usuario_id
+), totals AS (
+    SELECT
+        SUM(total_gastado) AS total_global,
+        AVG(total_gastado) AS promedio_gasto
+    FROM customer_spend
 )
-SELECT 
-    u.nombre AS cliente,
-    u.email AS contacto,
-    gc.suma_cliente AS total_gastado,
-    ROUND((gc.suma_cliente / (SELECT SUM(total) FROM ordenes) * 100), 2) AS porcentaje_contribucion
-FROM GastoCalculado gc
-JOIN usuarios u ON u.id = gc.usuario_id
-WHERE gc.suma_cliente > (SELECT AVG(suma_cliente) FROM GastoCalculado);
-
--- VERIFY
--- SELECT * FROM clientes_ricos ORDER BY total_gastado DESC;
+SELECT
+    u.id AS usuario_id,
+    u.nombre AS cliente_nombre,
+    COALESCE(u.email, 'sin_email') AS cliente_email,
+    cs.total_ordenes,
+    cs.total_gastado,
+    cs.ticket_promedio,
+    ROUND(
+        CASE
+            WHEN t.total_global = 0 THEN 0
+            ELSE (cs.total_gastado / t.total_global) * 100
+        END,
+        2
+    ) AS porcentaje_ingresos,
+    CASE
+        WHEN cs.total_gastado >= 1000 THEN 'vip'
+        WHEN cs.total_gastado >= 300 THEN 'alto'
+        ELSE 'medio'
+    END AS nivel_cliente
+FROM customer_spend cs
+JOIN usuarios u ON u.id = cs.usuario_id
+CROSS JOIN totals t
+HAVING cs.total_gastado >= t.promedio_gasto;

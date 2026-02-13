@@ -2,25 +2,25 @@
 -- SEGURIDAD: ROLES Y PERMISOS
 -- =================================================================
 
--- 1. Crear el rol para la aplicación (sin permisos de superusuario)
--- Nota: En producción, la contraseña vendría de una variable de entorno.
-DO $$ 
+-- 1. Crear el rol para la aplicacion (sin permisos de superusuario)
+-- Nota: En produccion, la contrasena vendria de una variable de entorno.
+DO $$
 BEGIN
-  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'chema') THEN
-    CREATE ROLE chema WITH LOGIN PASSWORD 'Chema3001';
+  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'app_user') THEN
+    CREATE ROLE app_user WITH LOGIN PASSWORD 'app_password';
   END IF;
 END $$;
 
--- 2. Permisos de conexión
-GRANT CONNECT ON DATABASE postgres TO chema;
-GRANT USAGE ON SCHEMA public TO chema;
+-- 2. Permisos de conexion
+GRANT CONNECT ON DATABASE postgres TO app_user;
+GRANT USAGE ON SCHEMA public TO app_user;
 
 -- 3. Acceso RESTRINGIDO (Solo SELECT sobre las VIEWS)
 -- La app NO puede tocar las tablas directamente (Requisito PDF)
-REVOKE ALL ON ALL TABLES IN SCHEMA public FROM chema;
-GRANT SELECT ON ventas_por_categoria TO chema;
-GRANT SELECT ON inventario_status TO chema;
-GRANT SELECT ON clientes_ricos TO chema;
-GRANT SELECT ON mas_vendidos TO chema;
-GRANT SELECT ON mas_complejas TO chema;
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM app_user;
+GRANT SELECT ON vw_attendance_by_group TO app_user;
+GRANT SELECT ON vw_course_performance TO app_user;
+GRANT SELECT ON vw_rank_students TO app_user;
+GRANT SELECT ON vw_students_at_risk TO app_user;
+GRANT SELECT ON vw_teacher_load TO app_user;
 
