@@ -27,9 +27,9 @@ REVOKE ALL ON ALL TABLES IN SCHEMA public FROM chema;
 REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM chema;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM chema;
 
-GRANT SELECT ON vw_attendance_by_group TO chema;
-GRANT SELECT ON vw_course_performance TO chema;
-GRANT SELECT ON vw_rank_students TO chema;
-GRANT SELECT ON vw_students_at_risk TO chema;
-GRANT SELECT ON vw_teacher_load TO chema;
+GRANT SELECT ON vw_sales_by_category TO chema;
+GRANT SELECT ON vw_inventory_health TO chema;
+GRANT SELECT ON vw_customer_value TO chema;
+GRANT SELECT ON vw_product_sales_rank TO chema;
+GRANT SELECT ON vw_order_complexity TO chema;
 

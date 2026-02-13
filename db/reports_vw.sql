@@ -94,7 +94,7 @@ GROUP BY c.id, c.nombre;
 -- Metricas: total_ordenes, total_gastado, ticket_promedio,
 --           porcentaje_ingresos, nivel_cliente.
 -- Por que usa GROUP BY/HAVING: Agrupa por cliente y filtra por encima del
---           promedio de gasto usando HAVING.
+--           promedio de gasto usando WHERE con CTE.
 -- Verify:
 --   SELECT * FROM vw_customer_value ORDER BY total_gastado DESC;
 --   SELECT COUNT(*) FROM vw_customer_value;
@@ -137,7 +137,7 @@ SELECT
 FROM customer_spend cs
 JOIN usuarios u ON u.id = cs.usuario_id
 CROSS JOIN totals t
-HAVING cs.total_gastado >= t.promedio_gasto;
+WHERE cs.total_gastado >= t.promedio_gasto;
 
 -- =================================================================
 -- View: vw_product_sales_rank
