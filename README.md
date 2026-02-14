@@ -59,3 +59,28 @@ Resultado esperado:
 
 - Filtros validados con Zod: reportes de clientes y productos con whitelists y validacion en API.
 - Paginacion server-side: reportes de clientes y ordenes con limit/offset y navegacion por pagina.
+
+*.env:*
+# Database
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=change_me
+POSTGRES_DB=postgres
+
+# App role
+APP_DB_USER=chema
+APP_DB_PASSWORD=change_me
+
+
+*\dv*
+```bash 
+		List of relations
+		Schema |         Name          | Type |  Owner
+		--------+-----------------------+------+----------
+		public | vw_customer_value     | view | postgres
+		public | vw_inventory_health   | view | postgres
+		public | vw_order_complexity   | view | postgres
+		public | vw_product_sales_rank | view | postgres
+		public | vw_sales_by_category  | view | postgres
+		(5 rows)
+```
+Resultados obtenidos
