@@ -1,24 +1,61 @@
-**Tarea 6: Lab Reportes: Next.js Reports Dashboard (PostgreSQL + Views  +Docker Compose)**
+**Tarea 6: Lab Reportes: Next.js Reports Dashboard (PostgreSQL + Views + Docker Compose)**
 
 **Funcionamiento**
 
 *Base de datos*
 
-En la carpeta de db se crea el esquema, se insertan los datos a probar y por ultimo se crean las 5 views solicitadas en la actividad, aparte de que se crear indices para la optimizacion de consultas, y para visualizar desde el front se crea el usuario "chema" con los permisos necesarios para poder visualizarla.
+En la carpeta de db se crea el esquema, se insertan los datos a probar y se crean las 5 views solicitadas en la actividad. Tambien se crean indices para optimizar consultas y se configura el usuario con permisos de solo lectura para las views.
 
 *Conexion*
 
-La conexion se realizada tomando el DATABASE_URL, desde la variable de entorno para luego apuntar al contenedor que en este caso es 5432 dentro de la red de Docker.
+La conexion usa la variable de entorno DATABASE_URL, apuntando al contenedor de Postgres en el puerto 5432 dentro de la red de Docker.
 
 *Reportes*
 
-Los reportes se pueden visualizar desde el front en donde cada view esta repartida en una diferente ruta en los cuales se procesan los filtros con Zon, se parametrizan algunas querys y se realiza la paginacion para evitar el sobrecargo de informacion.
+Los reportes se visualizan desde el front. Cada view tiene su ruta, con filtros validados con Zod, queries parametrizadas y paginacion server-side para evitar sobrecarga.
 
 *Docker Compose*
 
-Docker compose, en un contenedor se encarga de maneter los scripts de postgres para que asi se ejecuten de una manera "automatica".
-
+Docker Compose levanta Postgres y ejecuta los scripts SQL de manera automatica.
 
 *INDEXES*
 
-Para que *Next.js* fucniones de manera mucha mos eficiente se realizo la implementacion de 3 diferentese indices, los cuales son los siguientes:
+Para que Next.js funcione de manera mas eficiente se crearon los siguientes indices:
+```
+CREATE INDEX IF NOT EXISTS idx_orden_detalles_orden_id ON orden_detalles(orden_id);
+CREATE INDEX IF NOT EXISTS idx_orden_detalles_producto_id ON orden_detalles(producto_id);
+CREATE INDEX IF NOT EXISTS idx_productos_categoria_id ON productos(categoria_id);
+CREATE INDEX IF NOT EXISTS idx_ordenes_usuario_status ON ordenes(usuario_id, status);
+```
+
+**Requisitos de reportes**
+
+- Minimo 2 reportes incluyen filtros validados con Zod y queries parametrizadas.
+- Minimo 2 reportes incluyen paginacion server-side (limit/offset o cursor).
+- Evidencia de uso descrita en este README.
+
+**Ejecucion**
+
+1) Copia .env.example a .env y ajusta valores locales.
+2) Ejecuta el proyecto:
+```
+docker compose up --build
+```
+
+Resultado esperado:
+- postgres service_healthy
+- next.js Ready in ...
+- http://localhost:3000
+
+**Rutas de reportes**
+
+- /reports/vw_attendance_by_group
+- /reports/vw_course_performance
+- /reports/vw_rank_students
+- /reports/vw_students_at_risk
+- /reports/vw_teacher_load
+
+**Evidencia de filtros y paginacion**
+
+- Filtros validados con Zod: reportes de clientes y productos con whitelists y validacion en API.
+- Paginacion server-side: reportes de clientes y ordenes con limit/offset y navegacion por pagina.
