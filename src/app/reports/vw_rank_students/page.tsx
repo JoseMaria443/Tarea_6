@@ -58,7 +58,6 @@ function RankStudentsContent() {
 	}, [page, pageSize, validName, validLevel]);
 
 	useEffect(() => {
-		// Siempre llamar fetchData (con o sin filtro)
 		fetchData();
 	}, [fetchData]);
 

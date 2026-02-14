@@ -46,7 +46,6 @@ function TeacherLoadContent() {
 	}, [page, pageSize, validStatus]);
 
 	useEffect(() => {
-		// Siempre llamar fetchData (con o sin filtro)
 		fetchData();
 	}, [fetchData]);
 
@@ -62,7 +61,6 @@ function TeacherLoadContent() {
 		params.set("page", "1");
 		params.set("pageSize", String(pageSize));
 		window.history.pushState({}, "", `?${params.toString()}`);
-		// Reload page to trigger new fetch with updated searchParams
 		window.location.href = `?${params.toString()}`;
 	};
 

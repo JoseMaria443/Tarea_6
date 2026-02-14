@@ -57,7 +57,6 @@ function CoursePerformanceContent() {
 	}, [page, pageSize, validCategory, validRisk]);
 
 	useEffect(() => {
-		// Siempre llamar fetchData (con o sin filtro)
 		fetchData();
 	}, [fetchData]);
 

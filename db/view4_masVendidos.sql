@@ -1,13 +1,12 @@
--- =================================================================
+-- ============================================
 -- Que devuelve: Ranking de productos por ingresos.
 -- Grain: Una fila por producto.
 -- Metricas: total_unidades, ingresos_totales, precio_promedio, ranking.
--- Por que usa GROUP BY/HAVING: Agrupa por producto para calcular ventas.
--- Por que usa Window Function: Asigna ranking sin perder agregados.
+-- Por que usa GROUP BY/HAVING: Agrupa por producto para calcular ventas y usa window function para el ranking.
 -- Verify:
 --   SELECT * FROM vw_students_at_risk ORDER BY ranking;
 --   SELECT * FROM vw_students_at_risk WHERE ranking <= 3;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_students_at_risk AS
 SELECT
     p.id AS producto_id,

@@ -1,19 +1,12 @@
--- =================================================================
--- REPORTS_VW.SQL - Vistas para reportes
--- =================================================================
-
--- =================================================================
--- View: vw_sales_by_category
+-- ============================================
 -- Que devuelve: Resumen de ventas por categoria (solo pedidos pagados).
 -- Grain: Una fila por categoria.
--- Metricas: total_ordenes, total_items, ingresos_totales, ticket_promedio,
---           porcentaje_ingresos.
--- Por que usa GROUP BY/HAVING: Agrupa por categoria y filtra categorias con
---           al menos 2 lineas de detalle para evitar ruido.
+-- Metricas: total_ordenes, total_items, ingresos_totales, ticket_promedio, porcentaje_ingresos.
+-- Por que usa GROUP BY/HAVING: Agrupa por categoria y filtra categorias con al menos 2 lineas de detalle.
 -- Verify:
 --   SELECT * FROM vw_sales_by_category ORDER BY ingresos_totales DESC;
 --   SELECT SUM(ingresos_totales) FROM vw_sales_by_category;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_sales_by_category AS
 SELECT
     c.id AS categoria_id,
@@ -51,17 +44,15 @@ WHERE o.status = 'pagado'
 GROUP BY c.id, c.nombre
 HAVING COUNT(od.id) >= 2;
 
--- =================================================================
--- View: vw_inventory_health
+-- ============================================
 -- Que devuelve: Estado del inventario por categoria.
 -- Grain: Una fila por categoria.
--- Metricas: total_productos, total_stock, valor_inventario,
---           productos_bajo_stock, productos_agotados, pct_bajo_stock.
--- Por que usa GROUP BY/HAVING: Agrupa por categoria para resumen general.
+-- Metricas: total_productos, total_stock, valor_inventario, productos_bajo_stock, productos_agotados, pct_bajo_stock, nivel_riesgo.
+-- Por que usa GROUP BY/HAVING: Agrupa por categoria para resumen del inventario.
 -- Verify:
 --   SELECT * FROM vw_inventory_health ORDER BY pct_bajo_stock DESC;
 --   SELECT SUM(valor_inventario) FROM vw_inventory_health;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_inventory_health AS
 SELECT
     c.id AS categoria_id,
@@ -87,18 +78,15 @@ FROM categorias c
 LEFT JOIN productos p ON p.categoria_id = c.id
 GROUP BY c.id, c.nombre;
 
--- =================================================================
--- View: vw_customer_value
+-- ============================================
 -- Que devuelve: Clientes con mayor valor en pedidos pagados.
 -- Grain: Una fila por cliente.
--- Metricas: total_ordenes, total_gastado, ticket_promedio,
---           porcentaje_ingresos, nivel_cliente.
--- Por que usa GROUP BY/HAVING: Agrupa por cliente y filtra por encima del
---           promedio de gasto usando WHERE con CTE.
+-- Metricas: total_ordenes, total_gastado, ticket_promedio, porcentaje_ingresos, nivel_cliente.
+-- Por que usa GROUP BY/HAVING: Agrupa por cliente en el CTE y filtra clientes con gasto >= promedio.
 -- Verify:
 --   SELECT * FROM vw_customer_value ORDER BY total_gastado DESC;
 --   SELECT COUNT(*) FROM vw_customer_value;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_customer_value AS
 WITH customer_spend AS (
     SELECT
@@ -139,17 +127,15 @@ JOIN usuarios u ON u.id = cs.usuario_id
 CROSS JOIN totals t
 WHERE cs.total_gastado >= t.promedio_gasto;
 
--- =================================================================
--- View: vw_product_sales_rank
+-- ============================================
 -- Que devuelve: Ranking de productos por ingresos.
 -- Grain: Una fila por producto.
 -- Metricas: total_unidades, ingresos_totales, precio_promedio, ranking.
--- Por que usa GROUP BY/HAVING: Agrupa por producto para calcular ventas.
--- Por que usa Window Function: Asigna ranking sin perder agregados.
+-- Por que usa GROUP BY/HAVING: Agrupa por producto para calcular ventas y usa window function para el ranking.
 -- Verify:
 --   SELECT * FROM vw_product_sales_rank ORDER BY ranking;
 --   SELECT * FROM vw_product_sales_rank WHERE ranking <= 3;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_product_sales_rank AS
 SELECT
     p.id AS producto_id,
@@ -168,18 +154,15 @@ FROM productos p
 JOIN orden_detalles od ON od.producto_id = p.id
 GROUP BY p.id, p.nombre;
 
--- =================================================================
--- View: vw_order_complexity
+-- ============================================
 -- Que devuelve: Ordenes con multiples productos y su complejidad.
 -- Grain: Una fila por orden.
--- Metricas: productos_distintos, total_items, monto_total,
---           precio_promedio_item, nivel_complejidad.
--- Por que usa GROUP BY/HAVING: Agrupa por orden y filtra ordenes con
---           al menos 2 productos distintos.
+-- Metricas: productos_distintos, total_items, monto_total, precio_promedio_item, nivel_complejidad.
+-- Por que usa GROUP BY/HAVING: Agrupa por orden y filtra ordenes con al menos 2 productos distintos.
 -- Verify:
 --   SELECT * FROM vw_order_complexity ORDER BY productos_distintos DESC;
 --   SELECT COUNT(*) FROM vw_order_complexity;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_order_complexity AS
 SELECT
     o.id AS orden_id,

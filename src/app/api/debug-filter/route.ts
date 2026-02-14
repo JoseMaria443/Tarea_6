@@ -9,7 +9,6 @@ export async function GET(request: Request) {
     
     const rawTerm = getParam(searchParams.get("term") as string | undefined).trim();
     
-    // Debug: Mostrar qué recibimos
     const filters: string[] = [];
     const values: Array<string | number> = [];
 
@@ -28,12 +27,10 @@ export async function GET(request: Request) {
     console.log("DEBUG - values:", values);
     console.log("DEBUG - where clause:", where);
 
-    // Consulta sin filtro
     const noFilterRes = await query(
       `SELECT term, COUNT(*) as count FROM vw_attendance_by_group GROUP BY term`
     );
 
-    // Consulta con filtro
     const sqlQuery = `SELECT * FROM vw_attendance_by_group ${where} ORDER BY porcentaje_asistencia ASC`;
     console.log("DEBUG - SQL Query:", sqlQuery);
     console.log("DEBUG - SQL Values:", values);

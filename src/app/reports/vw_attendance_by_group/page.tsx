@@ -39,7 +39,6 @@ function AttendanceContent() {
   }, [validCategory]);
 
 	useEffect(() => {
-		// Siempre llamar fetchData (con o sin filtro)
 		fetchData();
 	}, [fetchData]);
 

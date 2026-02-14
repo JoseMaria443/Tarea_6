@@ -64,7 +64,6 @@ function StudentsAtRiskContent() {
 	}, [page, pageSize, validQuery]);
 
 	useEffect(() => {
-		// Siempre llamar fetchData (con o sin filtro)
 		fetchData();
 	}, [fetchData]);
 

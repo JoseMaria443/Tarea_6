@@ -1,7 +1,3 @@
-/**
- * Utilidades compartidas para reports
- */
-
 export const toNumber = (value: string | undefined, fallback: number): number => {
 	const n = Number(value);
 	return Number.isFinite(n) && n > 0 ? n : fallback;

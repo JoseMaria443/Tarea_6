@@ -1,35 +1,49 @@
--- =================================================================
--- SEGURIDAD: ROLES Y PERMISOS
--- =================================================================
+\getenv APP_DB_USER
+\getenv APP_DB_PASSWORD
 
--- 1. Crear el rol para la aplicacion (sin permisos de superusuario)
--- Nota: En produccion, la contrasena vendria de una variable de entorno.
 DO $$
+DECLARE
+  v_user text := :'APP_DB_USER';
+  v_pass text := :'APP_DB_PASSWORD';
 BEGIN
-  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'chema') THEN
-    CREATE ROLE chema WITH LOGIN PASSWORD 'chema3001';
+  IF v_user IS NULL OR v_user = '' THEN
+    RAISE EXCEPTION 'APP_DB_USER no definido';
+  END IF;
+  IF v_pass IS NULL OR v_pass = '' THEN
+    RAISE EXCEPTION 'APP_DB_PASSWORD no definido';
+  END IF;
+
+  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = v_user) THEN
+    EXECUTE format('CREATE ROLE %I WITH LOGIN PASSWORD %L', v_user, v_pass);
   ELSE
-    ALTER ROLE chema WITH LOGIN PASSWORD 'chema3001';
+    EXECUTE format('ALTER ROLE %I WITH LOGIN PASSWORD %L', v_user, v_pass);
   END IF;
 END $$;
 
--- 2. Permisos de conexion
-GRANT CONNECT ON DATABASE postgres TO chema;
-GRANT USAGE ON SCHEMA public TO chema;
+DO $$
+DECLARE
+  v_user text := :'APP_DB_USER';
+BEGIN
+  EXECUTE format('GRANT CONNECT ON DATABASE %I TO %I', current_database(), v_user);
+  EXECUTE format('GRANT USAGE ON SCHEMA public TO %I', v_user);
+END $$;
 
--- 3. Acceso RESTRINGIDO (Solo SELECT sobre las VIEWS)
--- La app NO puede tocar las tablas directamente (Requisito PDF)
 REVOKE ALL ON ALL TABLES IN SCHEMA public FROM PUBLIC;
 REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM PUBLIC;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC;
 
-REVOKE ALL ON ALL TABLES IN SCHEMA public FROM chema;
-REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM chema;
-REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM chema;
+DO $$
+DECLARE
+  v_user text := :'APP_DB_USER';
+BEGIN
+  EXECUTE format('REVOKE ALL ON ALL TABLES IN SCHEMA public FROM %I', v_user);
+  EXECUTE format('REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM %I', v_user);
+  EXECUTE format('REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM %I', v_user);
 
-GRANT SELECT ON vw_sales_by_category TO chema;
-GRANT SELECT ON vw_inventory_health TO chema;
-GRANT SELECT ON vw_customer_value TO chema;
-GRANT SELECT ON vw_product_sales_rank TO chema;
-GRANT SELECT ON vw_order_complexity TO chema;
+  EXECUTE format('GRANT SELECT ON vw_sales_by_category TO %I', v_user);
+  EXECUTE format('GRANT SELECT ON vw_inventory_health TO %I', v_user);
+  EXECUTE format('GRANT SELECT ON vw_customer_value TO %I', v_user);
+  EXECUTE format('GRANT SELECT ON vw_product_sales_rank TO %I', v_user);
+  EXECUTE format('GRANT SELECT ON vw_order_complexity TO %I', v_user);
+END $$;
 

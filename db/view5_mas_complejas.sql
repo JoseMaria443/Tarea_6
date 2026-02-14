@@ -1,14 +1,12 @@
--- =================================================================
+-- ============================================
 -- Que devuelve: Ordenes con multiples productos y su complejidad.
 -- Grain: Una fila por orden.
--- Metricas: productos_distintos, total_items, monto_total,
---           precio_promedio_item, nivel_complejidad.
--- Por que usa GROUP BY/HAVING: Agrupa por orden y filtra ordenes con
---           al menos 2 productos distintos.
+-- Metricas: productos_distintos, total_items, monto_total, precio_promedio_item, nivel_complejidad.
+-- Por que usa GROUP BY/HAVING: Agrupa por orden y filtra ordenes con al menos 2 productos distintos.
 -- Verify:
 --   SELECT * FROM vw_teacher_load ORDER BY productos_distintos DESC;
 --   SELECT COUNT(*) FROM vw_teacher_load;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_teacher_load AS
 SELECT
     o.id AS orden_id,

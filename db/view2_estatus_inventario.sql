@@ -1,13 +1,12 @@
--- =================================================================
+-- ============================================
 -- Que devuelve: Estado del inventario por categoria.
 -- Grain: Una fila por categoria.
--- Metricas: total_productos, total_stock, valor_inventario,
---           productos_bajo_stock, productos_agotados, pct_bajo_stock.
--- Por que usa GROUP BY/HAVING: Agrupa por categoria para resumen general.
+-- Metricas: total_productos, total_stock, valor_inventario, productos_bajo_stock, productos_agotados, pct_bajo_stock, nivel_riesgo.
+-- Por que usa GROUP BY/HAVING: Agrupa por categoria para resumen del inventario.
 -- Verify:
 --   SELECT * FROM vw_course_performance ORDER BY pct_bajo_stock DESC;
 --   SELECT SUM(valor_inventario) FROM vw_course_performance;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_course_performance AS
 SELECT
     c.id AS categoria_id,

@@ -11,7 +11,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950">
-      {/* Header */}
       <div className="bg-gradient-to-r from-gray-900 via-slate-900 to-gray-900 text-white shadow-2xl border-b-4 border-emerald-500">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <h1 className="text-3xl font-bold mb-2">Dashboard de Reportes SQL</h1>
@@ -19,7 +18,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="w-full px-6 py-12">
         <div className="grid grid-cols-1 gap-6">
           {reports.map((r) => (

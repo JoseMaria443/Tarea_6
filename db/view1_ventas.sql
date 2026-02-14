@@ -1,14 +1,12 @@
--- =================================================================
+-- ============================================
 -- Que devuelve: Ventas por categoria (solo pedidos pagados).
 -- Grain: Una fila por categoria.
--- Metricas: total_ordenes, total_items, ingresos_totales, ticket_promedio,
---           porcentaje_ingresos.
--- Por que usa GROUP BY/HAVING: Agrupa por categoria y filtra categorias con
---           al menos 2 lineas de detalle para evitar ruido.
+-- Metricas: total_ordenes, total_items, ingresos_totales, ticket_promedio, porcentaje_ingresos.
+-- Por que usa GROUP BY/HAVING: Agrupa por categoria y filtra categorias con al menos 2 lineas de detalle.
 -- Verify:
 --   SELECT * FROM vw_attendance_by_group ORDER BY ingresos_totales DESC;
 --   SELECT SUM(ingresos_totales) FROM vw_attendance_by_group;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_attendance_by_group AS
 SELECT
     c.id AS categoria_id,

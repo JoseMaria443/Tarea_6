@@ -1,19 +1,3 @@
--- ============================================
--- SCHEMA.SQL - Definición de Estructura
--- ============================================
--- Equipo: [Nombre del equipo]
--- Fecha: [Fecha]
--- Dominio: [Describir el dominio modelado]
--- ============================================
-
--- Limpiar tablas si existen (util para desarrollo)
--- CUIDADO: Esto borra todos los datos
-
--- ============================================
--- TABLAS CATÁLOGO (sin dependencias)
--- ============================================
-
--- Ejemplo: Categorías
 CREATE TABLE categorias (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
@@ -21,11 +5,6 @@ CREATE TABLE categorias (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- TABLAS ENTIDAD PRINCIPAL
--- ============================================
-
--- Ejemplo: Usuarios
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -36,7 +15,6 @@ CREATE TABLE usuarios (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Ejemplo: Productos (con FK a categorías)
 CREATE TABLE productos (
     id SERIAL PRIMARY KEY,
     codigo VARCHAR(50) NOT NULL UNIQUE,
@@ -49,11 +27,6 @@ CREATE TABLE productos (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- TABLAS DE RELACIÓN (muchos a muchos)
--- ============================================
-
--- Ejemplo: Órdenes
 CREATE TABLE ordenes (
     id SERIAL PRIMARY KEY,
     usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE RESTRICT,
@@ -64,7 +37,6 @@ CREATE TABLE ordenes (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Ejemplo: Detalle de órdenes
 CREATE TABLE orden_detalles (
     id SERIAL PRIMARY KEY,
     orden_id INTEGER NOT NULL REFERENCES ordenes(id) ON DELETE CASCADE,
@@ -72,27 +44,12 @@ CREATE TABLE orden_detalles (
     cantidad INTEGER NOT NULL CHECK (cantidad > 0),
     precio_unitario DECIMAL(10, 2) NOT NULL CHECK (precio_unitario >= 0),
     subtotal DECIMAL(12, 2) GENERATED ALWAYS AS (cantidad * precio_unitario) STORED,
-    
-    -- Evitar duplicados del mismo producto en una orden
+
     UNIQUE (orden_id, producto_id)
 );
-
-
-
--- ESTUDIANTES HASTA ACÁ
-
-
--- ============================================
--- COMENTARIOS DE TABLAS (documentacion en BD)
--- ============================================
 
 COMMENT ON TABLE categorias IS 'Catálogo de categorías de productos';
 COMMENT ON TABLE usuarios IS 'Usuarios del sistema';
 COMMENT ON TABLE productos IS 'Catálogo de productos disponibles';
 COMMENT ON TABLE ordenes IS 'Órdenes/pedidos de los usuarios';
 COMMENT ON TABLE orden_detalles IS 'Detalle de productos por orden';
-
--- ============================================
--- FIN DEL SCHEMA
--- ============================================
--- Para ejecutar: \i db/schema.sql

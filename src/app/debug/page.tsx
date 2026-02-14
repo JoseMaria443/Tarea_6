@@ -8,12 +8,10 @@ export default async function DebugPage() {
   let debugInfo: any = null;
 
   try {
-    // Test de conexión
     const connectionTest = await query("SELECT 1 as connected");
     dbStatus = "connected";
     statusMessage = "Conectado a la base de datos";
 
-    // Obtener info de las vistas
     const viewsInfo = await query(`
       SELECT table_name as view_name 
       FROM information_schema.views 
@@ -22,7 +20,6 @@ export default async function DebugPage() {
       ORDER BY table_name
     `);
 
-    // Datos por vista
     const views = await Promise.all(
       viewsInfo.rows.map(async (row: any) => {
         try {
@@ -56,7 +53,6 @@ export default async function DebugPage() {
       })
     );
 
-    // Prueba de búsqueda específica
     let searchTest = null;
     try {
       const searchRes = await query(
@@ -96,7 +92,6 @@ export default async function DebugPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-10">
-        {/* Status Card */}
         <div
           className={`rounded-lg p-6 mb-8 border-2 ${
             dbStatus === "connected"
@@ -123,7 +118,6 @@ export default async function DebugPage() {
           )}
         </div>
 
-        {/* Views Status */}
         {debugInfo?.views && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4">Vistas Disponibles</h2>
@@ -191,7 +185,6 @@ export default async function DebugPage() {
           </div>
         )}
 
-        {/* Search Test */}
         {debugInfo?.search_test && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4">Prueba de Búsqueda</h2>
@@ -222,7 +215,6 @@ export default async function DebugPage() {
           </div>
         )}
 
-        {/* URL Examples */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-4">URLs para Probar</h2>
           <div className="space-y-2 text-sm">

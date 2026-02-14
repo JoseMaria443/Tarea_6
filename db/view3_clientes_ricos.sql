@@ -1,15 +1,12 @@
--- =================================================================
+-- ============================================
 -- Que devuelve: Clientes con mayor valor en pedidos pagados.
 -- Grain: Una fila por cliente.
--- Metricas: total_ordenes, total_gastado, ticket_promedio,
---           porcentaje_ingresos, nivel_cliente.
--- Por que usa GROUP BY/HAVING: Agrupa por cliente y filtra por encima del
---           promedio de gasto usando HAVING.
--- Por que usa CTE: Aisla calculos de gasto y totales globales.
+-- Metricas: total_ordenes, total_gastado, ticket_promedio, porcentaje_ingresos, nivel_cliente.
+-- Por que usa GROUP BY/HAVING: Agrupa por cliente en el CTE y filtra clientes con gasto >= promedio usando HAVING.
 -- Verify:
 --   SELECT * FROM vw_rank_students ORDER BY total_gastado DESC;
 --   SELECT COUNT(*) FROM vw_rank_students;
--- =================================================================
+-- ============================================
 CREATE OR REPLACE VIEW vw_rank_students AS
 WITH customer_spend AS (
     SELECT
